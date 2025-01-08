@@ -4,7 +4,7 @@ import typer
 from pathlib import Path
 
 from data import corrupt_mnist
-from api import pick_device
+from utils import pick_device
 from model import MyAwesomeModel
 
 
@@ -17,6 +17,7 @@ def evaluate(model_checkpoint: Path = Path("models/model.pt"), batch_size: int =
 
     model = MyAwesomeModel().to(device)
     model.load_state_dict(torch.load(model_checkpoint, weights_only=True))
+    model.eval()
     _, test_set = corrupt_mnist()
 
     test_loader = torch.utils.data.DataLoader(test_set, batch_size, shuffle=False)

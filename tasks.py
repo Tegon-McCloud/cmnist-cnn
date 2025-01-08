@@ -55,10 +55,24 @@ def docker_build(ctx: Context, progress: str = "plain") -> None:
         pty=not WINDOWS
     )
     ctx.run(
+        f"docker build -t evaluate:latest . -f dockerfiles/evaluate.dockerfile --progress={progress}",
+        echo=True,
+        pty=not WINDOWS
+    )
+    ctx.run(
         f"docker build -t api:latest . -f dockerfiles/api.dockerfile --progress={progress}",
         echo=True,
         pty=not WINDOWS
     )
+
+@task
+def docker_train(ctx: Context) -> None:
+    ctx.run(
+        f"docker run -t train:latest . -f dockerfiles/train.dockerfile --progress={progress}",
+        echo=True,
+        pty=not WINDOWS
+    )
+
 
 # Documentation commands
 @task(dev_requirements)

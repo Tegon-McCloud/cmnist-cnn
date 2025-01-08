@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os
 
 from data import corrupt_mnist
-from api import pick_device
+from utils import pick_device
 from model import MyAwesomeModel
 
 app = typer.Typer()
@@ -50,6 +50,7 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
             loss_history.append(loss.item())
             acc_history.append(correct / total)
     
+    os.makedirs("models", exist_ok=True)
     torch.save(model.state_dict(), "models/model.pt")
 
     fig, axs = plt.subplots(1, 2, figsize=(8, 4))
@@ -63,6 +64,8 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
     axs[1].set_xlabel("Step")
     
     fig.tight_layout()
+    
+    os.makedirs("reports/figures", exist_ok=True)
     fig.savefig("reports/figures/train_stats.pdf")
 
 
