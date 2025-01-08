@@ -1,13 +1,14 @@
 import torch
 import torch.utils.data.dataloader
 import typer
+from pathlib import Path
 
 from data import corrupt_mnist
 from api import pick_device
 from model import MyAwesomeModel
 
 
-def evaluate(model_checkpoint: str, batch_size: int = 32) -> None:
+def evaluate(model_checkpoint: Path = Path("models/model.pt"), batch_size: int = 32) -> None:
     """Evaluate a trained model."""
     print("Evaluating like my life depends on it")
     device = pick_device()
