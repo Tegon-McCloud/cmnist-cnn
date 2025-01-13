@@ -1,4 +1,6 @@
-from torch import nn
+import torch
+from torch import nn, optim
+from pytorch_lightning import LightningModule
 
 class ResBlock(nn.Module):
 
@@ -13,7 +15,7 @@ class ResBlock(nn.Module):
         else:
             self.resconv = nn.Identity()
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
 
         res = self.resconv(x)
         
@@ -22,13 +24,12 @@ class ResBlock(nn.Module):
         x = self.conv2(x)
 
         return (x + res).relu()
+    
 
-
-
-class MyAwesomeModel(nn.Module):
+class MyAwesomeModel(LightningModule):
     """My awesome model."""
 
-    def __init__(self) -> None:
+    def __init__(self, lr: float) -> None:
         super().__init__()
 
         self.feature_extractor = nn.Sequential(
@@ -49,11 +50,44 @@ class MyAwesomeModel(nn.Module):
             nn.Linear(128, 10),
         )
 
+        self.criterion = nn.CrossEntropyLoss()
+        self.lr = lr
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         features = self.feature_extractor(x)
         return self.classifier(features)
+    
+    def training_step(self, batch, batch_idx):
+        images, target = batch
+        output = self(images)
+        loss = self.criterion(output, target)
+
+        prediction = output.argmax(dim=1)
+        correct = (prediction == target).sum().item()
+        total = target.size(0)
+
+        self.log("train_loss", loss.item(), prog_bar=True)
+        self.log("train_acc", correct / total, prog_bar=True)
+
+        return loss
+
+    def test_step(self, batch, batch_idx):
+        images, target = batch
+        output = self(images)
+        loss = self.criterion(output, target)
         
+        prediction = output.argmax(dim=1)
+        correct = (prediction == target).sum().item()
+        total = target.size(0)
+
+        self.log("test_loss", loss.item(), on_epoch=True)
+        self.log("test_acc", correct / total, on_epoch=True)
+
+        return loss
+
+
+    def configure_optimizers(self):
+        return optim.Adam(self.parameters(), lr=self.lr)
 
 if __name__ == "__main__":
 

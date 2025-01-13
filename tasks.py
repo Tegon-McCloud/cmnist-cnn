@@ -68,7 +68,15 @@ def docker_build(ctx: Context, progress: str = "plain") -> None:
 @task
 def docker_train(ctx: Context) -> None:
     ctx.run(
-        f"docker run -t train:latest . -f dockerfiles/train.dockerfile --progress={progress}",
+        f"docker run -t --rm --name experiment_train -v {os.getcwd()}/models:/models/ train:latest",
+        echo=True,
+        pty=not WINDOWS
+    )
+
+@task
+def docker_evaluate(ctx: Context) -> None:
+    ctx.run(
+        f"docker run -t --rm --name experiment_evaluate -v {os.getcwd()}/models:/models/ evaluate:latest",
         echo=True,
         pty=not WINDOWS
     )

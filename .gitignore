@@ -68,6 +68,11 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Lightning stuff:
+lightning_logs/
+wandb/
+cmnist-cnn/
+
 # Translations
 *.mo
 *.pot
