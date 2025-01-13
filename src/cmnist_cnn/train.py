@@ -1,6 +1,7 @@
 import torch
 import torch.utils.data.dataloader
 from pytorch_lightning import Trainer
+from pytorch_lightning.callbacks import ModelCheckpoint
 import pytorch_lightning.loggers
 import typer
 import torch.nn as nn
@@ -21,7 +22,13 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
     train_set, _ = corrupt_mnist()
     train_loader = torch.utils.data.DataLoader(train_set, batch_size, shuffle=True, num_workers=4, persistent_workers=True)
 
-    trainer = Trainer(max_epochs=epochs, logger=pytorch_lightning.loggers.WandbLogger(project="cmnist-cnn"))
+    checkpoint_callback = ModelCheckpoint(dirpath="models", filename="{epoch}")
+
+    trainer = Trainer(
+        max_epochs=epochs,
+        callbacks=[checkpoint_callback],
+        logger=pytorch_lightning.loggers.WandbLogger(project="cmnist-cnn"),
+    )
     trainer.fit(model, train_loader)
 
 
