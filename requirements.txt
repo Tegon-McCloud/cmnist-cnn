@@ -2,6 +2,6 @@ torch==2.5.1
 numpy==1.26.4
 matplotlib==3.10
 typer==0.15.1
-fastapi==0.115.6
+fastapi==0.115.8
 uvicorn==0.34.0
 pytorch-lightning==2.5.0
